@@ -34,7 +34,7 @@ class LinkedList(MutableSequence):
         if not isinstance(index, int):
             raise TypeError()
 
-        if not 0 <= index < self._len:
+        if not 0 < index <= self._len:
             raise IndexError()
 
     def __delitem__(self, index: int) -> Any:
@@ -136,8 +136,41 @@ class DoubleLinkedList(LinkedList):
     def __init__(self):
         super().__init__()
 
+
+    def append(self, value: Any):
+        """Переопределение метода для добавления элемента в двусвязный список"""
+        append_node = DoubleLinkedNode(value)
+
+        self._len += 1
+        if self._head is None:
+            self._head = self._tail = append_node
+        else:
+            self.linked_nodes(self._tail, append_node)
+            self._tail = append_node
+
+    def insert(self, index, value):
+        """ Переопределение метода для добавления элемента в двусвязанный список по указанному индексу"""
+        self._check_indexes(index)
+
+        insert_node = DoubleLinkedNode(value)
+
+        self._len += 1
+        if index == 0:
+            insert_node.next = self._head
+            self._head.prev = insert_node
+            self._head = insert_node
+            self._len += 1
+        elif index >= self._len - 1:
+            self.append(value)
+        else:
+            prev_node = self._step_by_step_on_nodes(index - 1)
+            next_node = prev_node.next
+
+            self.linked_nodes(prev_node, insert_node)
+            self.linked_nodes(insert_node, next_node)
+
     @staticmethod
-    def dbl_linked_nodes(left_node: DoubleLinkedNode, right_node: Optional[DoubleLinkedNode] = None) -> None:
+    def linked_nodes(left_node: DoubleLinkedNode, right_node: Optional[DoubleLinkedNode] = None) -> None:
         left_node.next = right_node
         right_node.prev = left_node
 
